@@ -1,0 +1,8 @@
+# depslib dependency file v1.0
+1582723643 source:/Devel/SwDevel/stm32_serial_flasher/main.c
+	<sys/types.h>
+	<sys/stat.h>
+	<fcntl.h>
+	<termios.h>
+	<stdio.h>
+
