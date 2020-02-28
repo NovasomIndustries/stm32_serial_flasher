@@ -43,7 +43,7 @@ char    c,filename[32],serial_port[32];
 
     sprintf(filename,"Uninitialized");
     sprintf(serial_port,MODEMDEVICE);
-    while ((c = getopt (argc, argv, ":expuw:")) != -1)
+    while ((c = getopt (argc, argv, ":expurw:")) != -1)
     {
         switch (c)
         {
@@ -57,6 +57,8 @@ char    c,filename[32],serial_port[32];
             case 'p'    :   sprintf(serial_port,"%s",optarg);
                             break;
             case 'u'    :   optflag = 4;
+                            break;
+            case 'r'    :   optflag = 5;
                             break;
             default     :   usage(); return -1;
         }
@@ -83,6 +85,8 @@ char    c,filename[32],serial_port[32];
     }
 
     res = autobaud(fd);
+    printf("%d\n",optflag);
+
     if ( res == 0)
     {
         tcflush(fd, TCIFLUSH);
@@ -105,6 +109,8 @@ char    c,filename[32],serial_port[32];
             case    3   :   execute(fd);
                             break;
             case    4   :   write_unprotect(fd);
+                            break;
+            case    5   :   device_read(fd);
                             break;
             default     :   printf("Invalid option\n");
                             break;

@@ -12,7 +12,7 @@ int serial_port_init(int fd)
     newtio.c_iflag &= ~(IXON | IXOFF | IXANY | IGNPAR);
     newtio.c_lflag &= ~(ECHOK | ECHOCTL | ECHOKE);
     newtio.c_oflag &= ~(OPOST | ONLCR);
-    newtio.c_cc[VTIME]    = 5;   /* inter-character timer .5 second */
+    newtio.c_cc[VTIME]    = 255;   /* inter-character timer .5 second */
     newtio.c_cc[VMIN]     = 0;   /* non blocking read */
     tcflush(fd, TCIFLUSH);
     tcsetattr(fd,TCSANOW,&newtio);

@@ -109,7 +109,7 @@ int get_pidvid(int fd)
 
 void ack_error(char *caller)
 {
-    printf("Ack error in %s\n",caller);
+    printf("NACK in %s\n",caller);
     printf("Received 0x%02x\n",rx_buffer[0]);
 }
 
@@ -163,14 +163,27 @@ int write_unprotect(int fd)
     return 1;
 }
 
+int read_unprotect(int fd)
+{
+    if ( send_1byte_wait_ack(fd,READ_UNPROTECT_CMD)==0)
+    {
+        rx_buffer[0] = 0;
+        bytes_read = read(fd,&rx_buffer,1);
+        if ( rx_buffer[0] == ACK )
+        {
+            usleep(200000);
+            return autobaud(fd);
+        }
+    }
+    return 1;
+}
+
 int flash(int fd)
 {
-unsigned int addr=FLASH_ADDR, numblocks,block,j,pct=0, progress=0;
+unsigned int addr=FLASH_ADDR, numblocks,block,j;
 unsigned char cks=0;
 
     numblocks = (array_len/STM32_BUFSIZE) + 1;
-    pct = 100/numblocks;
-    progress = pct;
 
     for(block=0;block<numblocks;block++)
     {
@@ -181,7 +194,6 @@ unsigned char cks=0;
         }
         printf("Address 0x%08x (%.2f%%)\r",addr, ((100.0f / array_len) * STM32_BUFSIZE)*(block));
         fflush(stdout);
-        progress += pct;
         if( send_4bytes_wait_ack(fd, addr >> 24,addr >> 16, addr >> 8, addr & 0xff) == 1 )
         {
             ack_error("Sending address");
@@ -206,6 +218,46 @@ unsigned char cks=0;
                 ack_error("Write");
                 return 1;
             }
+            addr += STM32_BUFSIZE;
+        }
+    }
+    printf("Address 0x%08x (100%%)\n",addr);
+    return 0;
+}
+
+int device_read(int fd)
+{
+unsigned int addr=FLASH_ADDR, numblocks,block;
+
+    if ( read_unprotect(fd) != 0 )
+    {
+        ack_error("Read unprotect error");
+        return 1;
+    }
+    numblocks = (65536/STM32_BUFSIZE);
+    sleep(5);
+    for(block=0;block<numblocks;block++)
+    {
+        if ( send_1byte_wait_ack(fd,READ_CMD)==1)
+        {
+            ack_error("Sending read command");
+            return 1;
+        }
+        printf("Address 0x%08x (%.2f%%)\r",addr, ((100.0f / 65536) * STM32_BUFSIZE)*(block));
+        fflush(stdout);
+        if( send_4bytes_wait_ack(fd, addr >> 24,addr >> 16, addr >> 8, addr & 0xff) == 1 )
+        {
+            ack_error("Sending read address");
+            return 1;
+        }
+        else
+        {
+            if ( send_1byte_wait_ack(fd,127)==1)
+            {
+                ack_error("Sending number of bytes to read command");
+                return 1;
+            }
+            bytes_read = read(fd,&rx_buffer,1);
             addr += STM32_BUFSIZE;
         }
     }
