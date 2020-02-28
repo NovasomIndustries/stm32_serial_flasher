@@ -30,8 +30,18 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
+			<Add directory="include" />
 		</Compiler>
-		<Unit filename="main.c">
+		<Unit filename="include/serial.h" />
+		<Unit filename="include/stm32_cmd.h" />
+		<Unit filename="include/stm32_serial_flasher.h" />
+		<Unit filename="src/serial.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/stm32_cmd.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/stm32_serial_flasher.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Extensions>

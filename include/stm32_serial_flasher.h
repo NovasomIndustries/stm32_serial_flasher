@@ -28,3 +28,12 @@
 #define STM32_BUFSIZE   256
 #define FLASH_ADDR      0x08000000
 
+extern  struct termios oldtio,newtio,tmptio;
+extern  unsigned char device_flash[1024*1024];
+extern  unsigned char tx_buffer[STM32_BUFSIZE*2];
+extern  unsigned char rx_buffer[STM32_BUFSIZE*2];
+extern  int  bytes_read, ext_erase , flash_size;
+extern  int pid;
+
+extern  unsigned char   write_array[BUFSIZE];
+extern  int             array_len;
