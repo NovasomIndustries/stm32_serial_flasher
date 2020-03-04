@@ -77,7 +77,7 @@ int get_cmd(int fd)
 {
     if ( send_1byte_wait_ack(fd,GET_CMD)==0)
     {
-        printf("Bootloader version : 0x%02x\n",rx_buffer[2]);
+        printf("Bootloader version : %x.%x\n",rx_buffer[2]>>4,rx_buffer[2]&0x0f);
         if ( rx_buffer[9] == EXT_ERASE_CMD)
             ext_erase = 1;
         return 0;
@@ -85,14 +85,42 @@ int get_cmd(int fd)
     return 1;
 }
 
+stm32_devices   stm32[] =
+{
+    {
+        .pid = 0x438,
+        .device_name = "STM32F303x4(6/8)/F334xx/F328xx",
+        .flash_size = 65536,
+    },
+    {
+        .pid = 0x468,
+        .device_name = "STM32G431xx/441xx",
+        .flash_size = 65536,
+    },
+    {
+        .pid = 0x0,
+        .device_name = "Unknown device",
+        .flash_size = 65536,
+    },
+};
+
 char *get_device_string(int pid)
 {
-    if ( pid == 0x438 )
+int lpid = 1, index=0;
+
+    lpid = stm32[index].pid;
+    if( (lpid != 0))
     {
-        flash_size = 0xffff;
-        return "STM32F303x4(6/8)/F334xx/F328xx";
-    }
-    return "Unknown";
+        if ( stm32[index].pid == pid)
+        {
+            flash_size = stm32[index].flash_size;
+            return stm32[index].device_name;
+        }
+        index ++;
+        lpid = stm32[index].pid;
+    };
+    flash_size = stm32[index].flash_size;
+    return stm32[index].device_name;
 }
 
 int get_pidvid(int fd)
@@ -100,7 +128,7 @@ int get_pidvid(int fd)
     if ( send_1byte_wait_ack(fd,GET_ID)==0)
     {
         pid = (rx_buffer[2] << 8 ) | rx_buffer[3];
-        printf("PID : 0x%04x (%s)\n",pid,get_device_string(pid));
+        printf("Device : %s (PID : 0x%04x)\n",get_device_string(pid),pid);
 
         return 0;
     }

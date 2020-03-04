@@ -85,7 +85,6 @@ char    c,filename[32],serial_port[32];
     }
 
     res = autobaud(fd);
-    printf("%d\n",optflag);
 
     if ( res == 0)
     {

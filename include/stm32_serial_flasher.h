@@ -37,3 +37,9 @@ extern  int pid;
 
 extern  unsigned char   write_array[BUFSIZE];
 extern  int             array_len;
+
+typedef struct device_struct {
+    int   pid;
+    char  device_name[1024];
+    int   flash_size;
+} stm32_devices;
