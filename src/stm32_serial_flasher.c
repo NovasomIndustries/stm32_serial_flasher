@@ -43,7 +43,7 @@ char    c,filename[32],serial_port[32];
 
     sprintf(filename,"Uninitialized");
     sprintf(serial_port,MODEMDEVICE);
-    while ((c = getopt (argc, argv, ":expurw:")) != -1)
+    while ((c = getopt (argc, argv, "?expurw:")) != -1)
     {
         switch (c)
         {
@@ -60,6 +60,7 @@ char    c,filename[32],serial_port[32];
                             break;
             case 'r'    :   optflag = 5;
                             break;
+            case '?'    :   usage(); return -1;
             default     :   usage(); return -1;
         }
     }
