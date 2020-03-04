@@ -39,11 +39,11 @@ int main(int argc, char **argv)
 {
 int     fd,res=0;
 int     optflag=0;
-char    c,filename[32],serial_port[32];
+char    c,filename[32],serial_port[64];
 
     sprintf(filename,"Uninitialized");
     sprintf(serial_port,MODEMDEVICE);
-    while ((c = getopt (argc, argv, "?expurw:")) != -1)
+    while ((c = getopt (argc, argv, "?exp:urw:")) != -1)
     {
         switch (c)
         {
